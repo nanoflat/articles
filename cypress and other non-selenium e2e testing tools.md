@@ -1,19 +1,32 @@
 # There is life after Selenium
 - [There is life after Selenium](#there-is-life-after-selenium)
-    - [Intro](#intro)
-    - [Cypress](#cypress)
-        - [Concepts](#concepts)
-        - [Installation](#installation)
-        - [Usage](#usage)
-            - [Cypress coniguration](#cypress-coniguration)
-            - [Writing tests in Cypress](#writing-tests-in-cypress)
-            - [Test framework design with Cypress](#test-framework-design-with-cypress)
-            - [Cypress in CI](#cypress-in-ci)
-        - [Services](#services)
-        - [Other bells and rings](#other-bells-and-rings)
-        - [What can be done better](#what-can-be-done-better)
-    - [Summary](#summary)
-        - [Tools comparison](#tools-comparison)
+  - [Intro](#intro)
+  - [Cypress](#cypress)
+    - [Concepts](#concepts)
+    - [Architecture](#architecture)
+    - [Installation](#installation)
+    - [Usage](#usage)
+      - [Cypress coniguration](#cypress-coniguration)
+      - [Writing tests in Cypress](#writing-tests-in-cypress)
+      - [Test framework design with Cypress](#test-framework-design-with-cypress)
+      - [Cypress in CI](#cypress-in-ci)
+    - [Services](#services)
+    - [Other bells and rings](#other-bells-and-rings)
+    - [What can be done better](#what-can-be-done-better)
+  - [Puppeteer](#puppeteer)
+    - [Concepts](#concepts)
+    - [Writing tests](#writing-tests)
+    - [Installation](#installation)
+    - [Other bells and rings](#other-bells-and-rings)
+    - [Drawbacks](#drawbacks)
+  - [TestCafe](#testcafe)
+    - [Concepts](#concepts)
+    - [Installation](#installation)
+    - [Writing tests](#writing-tests)
+    - [Other bells and rings](#other-bells-and-rings)
+  - [Summary](#summary)
+    - [Tools comparison](#tools-comparison)
+- [Links](#links)
 
 
 ## Intro
@@ -29,13 +42,22 @@ I worked with cypress for a bit over a year, since beta 0.2x. It's grown in quit
 
 Main idea behind Cypress is that it bundles bunch of existing testing frameworks in one solution. So you have all of your mocks, stubs, assertions as one framework.
 
-Another thing that makes cypress stand-out is that it runs in same run-loop of your browser and not in remote session with some network wiring. So it has full control over your application, over traffic to it and can execute any off-browser actions, as it's node.js application.
+Another thing that makes cypress stand-out is that it operates withing your application: its node.js server runs in same run-loop of your browser and not in remote session with some network wiring (like json wire protocol of Selenium or DevTools protocol of Puppeteer). So it has full control over your application, over traffic to it and can execute any off-browser actions, as it's node.js application.
 
 Cypress do not target to replace all of your unit-tests or integration tests frameworks, you still can do it in cypress as helpers. But main focus of cypress is e2e.
 
 Cypress tests are written in JS, you can also use typescript.
 
 Main reason why I choose cypress - it's incredible dev-friendly. I think that old days when you have devs throwing code/applications to QA and they manage quality and automation already long gone. The only way you can scale any test automation - is to involve developers from day 1. And for that, framework should be with dev-first mentality.
+
+### Architecture
+
+Cypress main parts are:
+- Runner - chrome app, glue between driver, reporter, server and extension 
+- Driver - library that loads inside of your browser and execute commands in runtime
+- Extension - chrome extension
+- Server - nodeapp behind browser, responsible for all communication and external processes (reporters, plugins, other node processes)
+- Reporter - UI component for showing process and test results
 
 ### Installation
 
@@ -134,7 +156,89 @@ Because of fundamental technical choises cypress team did, it's fairly impossibl
 
 There are bunch of trade-offs you should be aware https://docs.cypress.io/guides/references/trade-offs.html#Temporary-trade-offs
 
+## Puppeteer
+
+### Concepts
+
+This is nodejs library that allow you to controll your Crhomium-based browser over DevTools protocol. Puppeter is not fully bundled framework as Cypress, which give you both full control over your test automation framework choises, and at same time creates a bit of overhead, as you have to add stuff yourself. 
+It's can be more familiar for anyone why was using Selenium before, as you operate with `Browser` object instance for any actions. After cypress it's a bit overhead for me.
+
+Test executes in headless crhomium browser, but you can configure to start it in windiwed mode or start with chrome. Differences between browsers https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/
+
+I think it Puppeteer was developed for dogfooding and testing DevTools of chrome by chrome team :)
+
+Recently I saw a lot of non-test related use of puppeteer, for example it used a lot for site crawlers, f.e. https://github.com/yujiosaka/headless-chrome-crawler  or system health monitors like https://checklyhq.com/. In general I see puppeteer as amazing browser-automation tool, not as tool I would use for test automation.
+
+### Writing tests
+
+Tests are simple js files, so by default it's just code without mocha stile test grouping or assertions.
+
+There are some plugins already exists, like https://github.com/smooth-code/jest-puppeteer or https://github.com/direct-adv-interfaces/mocha-headless-chrome
+
+Comparing to cypress which makes some magic with promises and making async code looking syncronus, in puppeteer you have to really use await-async everywhere
+
+
+
+### Installation
+
+As any node.js library - `yarn add puppeteer`
+
+### Other bells and rings
+
+You can test your Chrome extencions. Same stuff you can do with cypress with bit of a hack https://github.com/cypress-io/cypress/issues/1965
+
+With timeline trace you can test performance of application.
+
+There is slowMo config option that allow you to lower down execution speed of tests for better debugging.
+
+You can hook up on console events of browser, so you can better log
+
+In page evaluation you can set debugger, so your browser instance will start with DevTools and debugger attached.
+
+Puppeteer sandbox can help you to get started fast https://puppeteersandbox.com/
+
+### Drawbacks 
+
+Puppeteer is bundled with specific chrome version, so if you need to test on new crhome, you have to use new puppeteer version as well.
+
+
+
+## TestCafe
+
+### Concepts
+TestCafe as framework have a lot of similarities with cypress. Their both run in browser runtime, 
+both of them support JS or TS as test language. TestCafe tries to be closer to QA, even to manual QA, as it has TestCafe Studio - tool for record&playback tests with scriptless context. Another thing which will be very familiar to anyone in QA field is PageObject pattern, as it build in TestCafe framework.
+TestCafe is only one truly x-browser testing tool from this comparison. 
+
+TestCafe support parallel test execution out of the box.
+
+### Installation
+
+`yarn add testcafe`, no surprises here.
+
+`testcafe chrome tests/` - to run test in `test` folder.
+
+
+### Writing tests
+
+You can write in TS or JS. Looks like TestCafe has it's onw syntax for tests and assertions, so it's not as quick to adopt for devs as in case of Cypress which is bundled with mocha and chai. Tests sets called `features` that starts from specific `page`, inside of features you define your tests.
+
+
+### Other bells and rings
+
+With testcafe-live you can write tests and instantly see a result as you go, similar to filesystem watch in Cypress.
+
+
+
 ## Summary
+
+Cypress is a tool build by developers for developers for testing
+
+TestCafe is a tool build by developers/QA for QA.
+
+Puppeteer is a tool build by developers for developers for browser automation.
+
+If test automation for you is side effect, but browser-automation is a must, use Puppeteer. If you don't want to spend time on fine-tuning, and mainly want to test your app - use Cypress or TestCafe. If x-browser support is a must - use TestCaffe. If you want to build dev-centric test automation framework - use Cypress.
 
 ### Tools comparison
 
@@ -146,9 +250,10 @@ There are bunch of trade-offs you should be aware https://docs.cypress.io/guides
 
 
 
-#Links
+# Links
 - https://docs.cypress.io/api/cypress-api/custom-commands.html#Best-Practices
 - https://docs.cypress.io/faq/questions/using-cypress-faq.html
 - https://docs.cypress.io/guides/core-concepts/writing-and-organizing-tests.html
 - https://github.com/cypress-io/testing-workshop-cypress - nice workshop to follow full integration of cypress 
 - https://github.com/cypress-io/cypress-example-recipes more than enought of recepies for get you started
+
