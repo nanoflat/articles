@@ -260,13 +260,14 @@ If test automation for you is a side effect, but browser-automation is a must, u
 
 ### Tools comparison
 
-| Criteria          | Cypress         | TestCaffe                                                                                                                              | Puppitier       |
-| ----------------- | :-------------: | -------------------------------------------------------------------------------------------------------------------------------------: | --------------: |
-| Language support  | JS              | JS/Typescipt                                                                                                                           | JS              |
-| Browser Support   | Chrome/chromium | [Many main browsers](https://devexpress.github.io/testcafe/documentation/using-testcafe/common-concepts/browsers/browser-support.html) | Chrome/chromium |
-| Pricing           | Free(beta)      | [499$](https://testcafe.devexpress.com/Buy/)                                                                                           | Free            |
-| Extendability     | Moderate        | Low, many things is propreitary                                                                                                        | High            |
-| Examples (simple) |                 |                                                                                                                                        |                 |
+| Criteria          | Cypress                                             | TestCaffe                                                                                                                              | Puppitier                                             |
+| ----------------- | :-------------------------------------------------: | -------------------------------------------------------------------------------------------------------------------------------------: | ----------------------------------------------------: |
+| Language support  | JS                                                  | JS/Typescipt                                                                                                                           | JS                                                    |
+| Browser Support   | Chrome/chromium                                     | [Many main browsers](https://devexpress.github.io/testcafe/documentation/using-testcafe/common-concepts/browsers/browser-support.html) | Chrome/chromium                                       |
+| Pricing           | Free(beta)                                          | [499$](https://testcafe.devexpress.com/Buy/)                                                                                           | Free                                                  |
+| Extendability     | Moderate                                            | Low, many things is propreitary                                                                                                        | High                                                  |
+| Examples (simple) | [link](https://gitlab.com/nanoflat/cypress-example) | [link](https://gitlab.com/nanoflat/testCafe-example)                                                                                   | [link](https://gitlab.com/nanoflat/puppeteer-example) |
+| Execution time    | simple test headless: 16.77s                        | simple test headless: 30.61s                                                                                                           | simple test headless: 10.36s                          |
 
 
 # Links
