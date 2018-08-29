@@ -10,7 +10,7 @@
       - [Writing tests in Cypress](#writing-tests-in-cypress)
       - [Test framework design with Cypress](#test-framework-design-with-cypress)
       - [Cypress in CI](#cypress-in-ci)
-    - [Services](#services)
+    - [Cypress Dashboard Service](#cypress-dashboard-service)
     - [Other bells and rings](#other-bells-and-rings)
     - [What can be done better](#what-can-be-done-better)
   - [Puppeteer](#puppeteer)
@@ -34,7 +34,7 @@ While there is nothing horribly wrong with Selenium, it's a great tool and many 
 
 In this article I will highlight 3 major open-source non-selenium test automation frameworks. I will try to compare them by categories: use, x-browser support, community support etc.
 
-## Cypress
+## [Cypress](https://www.cypress.io/)
 
 I worked with cypress for a bit over a year, since beta 0.2x. It's grown in quite mature framework, that can fulfill many of test automation needs.
 
@@ -66,7 +66,7 @@ Cypress main parts are:
 ### Usage
 
 #### Cypress coniguration
-Cypress setup is defined in cypress.json. There you can setup baseurl of your page, timeouts, including and excluding policies, video recordings and bunch of other settings. Same you can setup in .env.json files and as ENV variables or run parameters for cypress commandline.
+Cypress setup is defined in `cypress.json`. There you can setup baseurl of your page, timeouts, including and excluding policies, video recordings and bunch of other settings. Same you can setup in .env.json files and as ENV variables or run parameters for cypress commandline.
 
 `support/defaults.js` - for overwriting defaults of cypress. F.e. I use it for whitelisting some cookies that I persist between runs
 
@@ -115,7 +115,7 @@ Assertions are chai assertions, and looks like ```cy.get('button').click().shoul
 
 In cypress docs you can find a lot of mentions about focusing on simplicity. I do agree with that and at same I beleive in code deduplication and DRY.
 
-There is much of holly beleives for PageObjects in QA community. Cypress will not block or support you if you want to implement it. I did it for my project as it was convinient at the beggining, we also build one of 2 levels of abstractions on top of PO, we call it `flows`.
+There is much of holly beleives for PageObjects in QA community. Cypress will not block or support you if you want to implement it. I did it for my project as it was convinient at the beggining, we also build one or 2 levels of abstractions on top of PO, we call it `flows`.
 
 More cypress-native way to decouple repeating logic is to put it in `support/commands.js`, so you are extending `cy()` object with custom actions, like login/logouts, create users etc.
 
@@ -124,27 +124,29 @@ Another point is to bypass UI as much as you can, using `cy.request()` calls to 
 
 #### Cypress in CI
 
-Cypress integrates in CI quite easily, there are bunch of examples for most of CI providers. 
-Best to run cypress as docker container, there are pre-build images or you can build it yourself from examples...
+Cypress integrates in CI quite easily, there are bunch of [examples for most of CI providers](https://docs.cypress.io/guides/guides/continuous-integration.html#What-is-supported). 
+Best to run cypress as docker container, there are pre-build images or you can build it yourself from [examples](https://github.com/cypress-io/cypress-docker-images)
 
 If you don't use Dashboboard service, you can publish cypress aftifacts and use any `mocha-reporter`, https://github.com/adamgruber/mochawesome is my favorite so far.
 
 Watchout for cache folder, which cypress use for installation -  if you have multi-job pipeline, you have to pass it as cashed folder or artifact to upstream jobs.
-With version 3.1.0 you can setup parallel runs with your CI runs.
 
-### Services
+With version 3.1.0 you can setup parallel runs with your CI runs using Cypress Dashboard Service
+
+### Cypress Dashboard Service
 Dashboard service from cypress allow you to look results of test runs. It have some history, video recordings and screenshots + test failure reasons in case of any. 
+
 With new cypress 3.1.0, Dashboard service also behaves as scheduler/dispatcher for parallel runs of your tests. Before all tests runs were sequencial, which is not best for debugging, but now it's much improved.
 
 ### Other bells and rings
 
-Cypress have quite cool **time travel** feature. It allow you to look back on state of application and DOM, which can be quite helpful for debug.
+Cypress have quite cool **time travel** feature. It allow you to look back on state of application and DOM, which can be quite helpful for debug. 
 
 In general, debuging is one of strong sides of cypress, you can use regular `debugger()` inside your tests to break in test execution and add hook to Chrome debugger.
 
 There is UI inspector that can help you to build actions and locators (if you need this kind of support)
 
-Stubs, spies and clocks can help you to inject some state (if you work with Redux or some other state machine), simulate network responses and error handling (how your app behaives on 500 error)
+[Stubs, spies and clocks](https://docs.cypress.io/guides/guides/stubs-spies-and-clocks.html#Spies) can help you to inject some state (if you work with Redux or some other state machine), simulate network responses and error handling (how your app behaives on 500 error) and fully control time in your application (to fast-forward animation)
 
 Cypress waits for element to be on page automatically, so you don't need to make any async functions to support relative waits by yourself.
 
@@ -154,14 +156,14 @@ You can implement re-run using cypress Module API, but it's not as easy and nati
 
 Because of fundamental technical choises cypress team did, it's fairly impossible to run tests on non-chromium browsers. 
 
-There are bunch of trade-offs you should be aware https://docs.cypress.io/guides/references/trade-offs.html#Temporary-trade-offs
+There are bunch of other trade-offs you should be aware https://docs.cypress.io/guides/references/trade-offs.html#Temporary-trade-offs
 
 ## Puppeteer
 
 ### Concepts
 
 This is nodejs library that allow you to controll your Crhomium-based browser over DevTools protocol. Puppeter is not fully bundled framework as Cypress, which give you both full control over your test automation framework choises, and at same time creates a bit of overhead, as you have to add stuff yourself. 
-It's can be more familiar for anyone why was using Selenium before, as you operate with `Browser` object instance for any actions. After cypress it's a bit overhead for me.
+It's can be more familiar for anyone why was using Selenium before, as you operate with `Browser` object instance for any actions. 
 
 Test executes in headless crhomium browser, but you can configure to start it in windiwed mode or start with chrome. Differences between browsers https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/
 
@@ -223,31 +225,48 @@ TestCafe support parallel test execution out of the box.
 
 You can write in TS or JS. Looks like TestCafe has it's onw syntax for tests and assertions, so it's not as quick to adopt for devs as in case of Cypress which is bundled with mocha and chai. Tests sets called `features` that starts from specific `page`, inside of features you define your tests.
 
+Simple test will look like:
+```javascript
+import { Selector } from 'testcafe'; // first import testcafe selectors
 
+fixture `Getting Started`// declare the fixture
+    .page `https://devexpress.github.io/testcafe/example`;  // specify the start page
+
+
+//then create a test and place your code there
+test('My first test', async t => {
+    await t
+        .typeText('#developer-name', 'John Smith')
+        .click('#submit-button')
+
+        // Use the assertion to check if the actual header text is equal to the expected one
+        .expect(Selector('#article-header').innerText).eql('Thank you, John Smith!');
+});
+```
 ### Other bells and rings
 
 With testcafe-live you can write tests and instantly see a result as you go, similar to filesystem watch in Cypress.
 
 
-
 ## Summary
 
-Cypress is a tool build by developers for developers for testing
+Cypress is a tool build by developers for **developers** for **testing**
 
-TestCafe is a tool build by developers/QA for QA.
+TestCafe is a tool build by developers/QA for **QA**.
 
-Puppeteer is a tool build by developers for developers for browser automation.
+Puppeteer is a tool build by developers for developers for **browser automation**.
 
 If test automation for you is side effect, but browser-automation is a must, use Puppeteer. If you don't want to spend time on fine-tuning, and mainly want to test your app - use Cypress or TestCafe. If x-browser support is a must - use TestCaffe. If you want to build dev-centric test automation framework - use Cypress.
 
 ### Tools comparison
 
-| Criteria         | Cypress    | TestCaffe | Puppitier |
-| ---------------- | :--------: | --------: | --------: |
-| Language support | JS         |           |           |
-| Browser Support  | Chrome     |           |           |
-| Pricing          | Free(beta) |           |           |
-
+| Criteria          | Cypress         | TestCaffe                                                                                                                              | Puppitier       |
+| ----------------- | :-------------: | -------------------------------------------------------------------------------------------------------------------------------------: | --------------: |
+| Language support  | JS              | JS/Typescipt                                                                                                                           | JS              |
+| Browser Support   | Chrome/chromium | [Many main browsers](https://devexpress.github.io/testcafe/documentation/using-testcafe/common-concepts/browsers/browser-support.html) | Chrome/chromium |
+| Pricing           | Free(beta)      | [499$](https://testcafe.devexpress.com/Buy/)                                                                                           | Free            |
+| Extendability     | Moderate        | Low, many things is propreitary                                                                                                        | High            |
+| Examples (simple) |                 |                                                                                                                                        |                 |
 
 
 # Links
