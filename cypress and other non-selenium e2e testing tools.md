@@ -3,14 +3,8 @@
   - [Intro](#intro)
   - [Cypress](#cypress)
     - [Concepts](#concepts)
-    - [Architecture](#architecture)
     - [Installation](#installation)
-    - [Usage](#usage)
-      - [Cypress configuration](#cypress-configuration)
-      - [Writing tests in Cypress](#writing-tests-in-cypress)
-      - [Test framework design with Cypress](#test-framework-design-with-cypress)
-      - [Cypress in CI](#cypress-in-ci)
-    - [Cypress Dashboard Service](#cypress-dashboard-service)
+    - [Writing tests in Cypress](#writing-tests-in-cypress)
     - [Other bells and rings](#other-bells-and-rings)
     - [What can be done better](#what-can-be-done-better)
   - [Puppeteer](#puppeteer)
@@ -50,35 +44,11 @@ Cypress tests are written in JS, you can also use typescript.
 
 The main reason why I choose cypress - it's incredible dev-friendly. I think those old days when you have devs throwing code/applications to QA and they manage quality and automation already long gone. The only way you can scale any test automation - is to involve developers from day 1. And for that, the framework should be with dev-first mentality.
 
-### Architecture
-
-Cypress main parts are:
-- Runner - chrome app, glue between the driver, reporter, server, and extension 
-- Driver - the library that loads inside of your browser and executes commands in runtime
-- Extension - chrome extension
-- Server - node app behind the browser, responsible for all communication and external processes (reporters, plugins, other node processes)
-- Reporter - UI component for showing process and test results
-
 ### Installation
 
 `npm install cypress`. That's it. It supports win/lin/mac as hosts. If you want, you can also download a stand-alone application if for some reason you don't want to mess with node/npm for just running tests.
 
-### Usage
-
-#### Cypress configuration
-Cypress setup is defined in `cypress.json`. There you can set up base URL of your page, timeouts, including and excluding policies, video recordings and a bunch of other settings. Same you can set up in .env.json files and as ENV variables or run parameters for cypress command line.
-
-`support/defaults.js` - for overwriting defaults of cypress. F.e. I use it for whitelisting some cookies that I persist between runs
-
-`support/index.js` - global config and behaviour of cypress. F.e. there I overwrite `before()` method, as I need to have it by default before all tests
-
-`support/assertions.js`  - for extending assertions that you can use in your tests. F.e. I extend it with `chai-almost` assertion.
-
-`support/commands.js` - for extending cypress commands. F.e. you can extend cypress with your custom `cy.login()` command for some common actions you execute. I don't use it as I prefer to have my own commands and methods rather than extending cypress. 
-
-`support/index.js` - for your custom plugins. It's executed when you (re)open project. I use it to load cypress configs for different environments.
-
-#### Writing tests in Cypress 
+### Writing tests in Cypress 
 
 Cypress tests are mocha.js tests. All of BDD syntax of mocha (I'm talking about grouping tests in sets by `describe()`, and tests are located in `it()` methods, `before()` and `after()` hooks etc..) without overhead of Cucumber BDDs, although there is a plugin for it https://github.com/TheBrainFamily/cypress-cucumber-preprocessor
 
@@ -110,33 +80,6 @@ If the element is not found - the test will fail. Period. This is the only way t
 The side benefit of this behaviour resolves in fact that you need fewer assertions.
 
 Assertions are chai assertions, and looks like ```cy.get('button').click().should('have.class', 'active')```
-
-#### Test framework design with Cypress
-
-In cypress docs, you can find a lot of mentions about focusing on simplicity. I do agree with that and at same, I believe in code deduplication and DRY.
-
-There is much of holly believes for PageObjects in QA community. Cypress will not block or support you if you want to implement it. I did it for my project as it was convenient at the beginning, we also build one or 2 levels of abstractions on top of PO, we call it `flows`.
-
-More cypress-native way to decouple repeating logic is to put it in `support/commands.js`, so you are extending `cy()` object with custom actions, like login/logouts, create users etc.
-
-Another point is to bypass UI as much as you can, using `cy.request()` calls to seed your test session with anything you need (user tokens/cookies) and stubbing.
-
-
-#### Cypress in CI
-
-Cypress integrates into CI quite easily, there are a bunch of [examples for most of CI providers](https://docs.cypress.io/guides/guides/continuous-integration.html#What-is-supported). 
-Best to run cypress as docker container, there are pre-built images or you can build it yourself from [examples](https://github.com/cypress-io/cypress-docker-images)
-
-If you don't use Dashboard service, you can publish cypress artifacts and use any `mocha-reporter`, https://github.com/adamgruber/mochawesome is my favorite so far.
-
-Watch out for cache folder, which cypress use for installation -  if you have a multi-job pipeline, you have to pass it as cashed folder or artifact to upstream jobs.
-
-With version 3.1.0 you can set up parallel runs with your CI runs using Cypress Dashboard Service
-
-### Cypress Dashboard Service
-Dashboard service from cypress allows you to look results of test runs. It has some history, video recordings, and screenshots + test failure reasons in case of any. 
-
-With new cypress 3.1.0, Dashboard service also behaves as scheduler/dispatcher for parallel runs of your tests. Before all tests runs were sequential, which is not best for debugging, but now it's much improved.
 
 ### Other bells and rings
 
@@ -179,8 +122,6 @@ There are some plugins already exists, like https://github.com/smooth-code/jest-
 
 Comparing to cypress which makes some magic with promises and making async code looking synchronous, in puppeteer you have to really use await-async everywhere
 
-
-
 ### Installation
 
 As any node.js library - `yarn add puppeteer`
@@ -202,8 +143,6 @@ Puppeteer sandbox can help you to get started fast https://puppeteersandbox.com/
 ### Drawbacks 
 
 Puppeteer is bundled with specific chrome version, so if you need to test on new chrome, you have to use new puppeteer version as well.
-
-
 
 ## TestCafe
 
