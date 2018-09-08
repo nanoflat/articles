@@ -191,7 +191,7 @@ With testcafe-live, you can write tests and instantly see a result as you go, si
 
 Cypress is a tool built by developers for **developers** for **testing**
 
-TestCafe is a tool build by developers/QA for **QA**.
+TestCafe is a tool build by developers/QA for **Test Automation Engineers**.
 
 Puppeteer is a tool built by developers for developers for **browser automation**.
 
@@ -203,7 +203,7 @@ If test automation for you is a side effect, but browser-automation is a must, u
 | ----------------- | :-------------------------------------------------: | -------------------------------------------------------------------------------------------------------------------------------------: | ----------------------------------------------------: |
 | Language support  | JS                                                  | JS/Typescipt                                                                                                                           | JS                                                    |
 | Browser Support   | Chrome/chromium                                     | [Many main browsers](https://devexpress.github.io/testcafe/documentation/using-testcafe/common-concepts/browsers/browser-support.html) | Chrome/chromium                                       |
-| Pricing           | Free(beta)                                          | [499$](https://testcafe.devexpress.com/Buy/)                                                                                           | Free                                                  |
+| Pricing           | Free(beta)                                          | Free(beta)                                                                                                                             | Free                                                  |
 | Extendability     | Moderate                                            | Low, many things is propreitary                                                                                                        | High                                                  |
 | Examples (simple) | [link](https://gitlab.com/nanoflat/cypress-example) | [link](https://gitlab.com/nanoflat/testCafe-example)                                                                                   | [link](https://gitlab.com/nanoflat/puppeteer-example) |
 | Execution time    | simple test headless: 16.77s                        | simple test headless: 30.61s                                                                                                           | simple test headless: 10.36s                          |
