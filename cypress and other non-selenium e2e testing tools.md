@@ -195,7 +195,13 @@ TestCafe is a tool build by developers/QA for **Test Automation Engineers**.
 
 Puppeteer is a tool built by developers for developers for **browser automation**.
 
-If test automation for you is a side effect, but browser-automation is a must, use Puppeteer. If you don't want to spend time on fine-tuning, and mainly want to test your app - use Cypress or TestCafe. If x-browser support is a must - use TestCaffe. If you want to build dev-centric test automation framework - use Cypress.
+If test automation for you is a side effect, but browser-automation is a must, use Puppeteer.
+
+ If you don't want to spend time on fine-tuning, and mainly want to test your app - use Cypress or TestCafe.
+ 
+If x-browser support is a must - use TestCaffe.
+
+If you want to build dev-centric test automation framework - use Cypress.
 
 ### Tools comparison
 
